@@ -1,1 +1,3 @@
 .vscode # ignore IDE data
+*.pyc
+*.pickle
