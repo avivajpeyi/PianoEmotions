@@ -16,7 +16,9 @@ n_nodes_hl3 = 500
 n_classes = 2 # yes or no
 batch_size = 100
 
-input_data_size = len(train_x)
+input_data_size = len(train_x[0])# each train_x instance is one song, and so one lexicon of notes
+print("DEBUG: input data size = "+str(input_data_size))
+
 
 x = tf.placeholder('float', [None, input_data_size])
 y = tf.placeholder('float')
@@ -50,16 +52,16 @@ def neural_network_model(data):
 
 def train_neural_network(x):
     prediction = neural_network_model(x)
+    print("DEBUG: output from NN = "+str(prediction))
     cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(labels= prediction,logits=y) )
+    print("DEBUG: cost = "+str(cost))
     optimizer = tf.train.AdamOptimizer().minimize(cost)
 
     hm_epochs = 10
     with tf.Session() as sess:
         sess.run(tf.initialize_all_variables())
-
         for epoch in range(hm_epochs):
             epoch_loss = 0
-
             i = 0
             while i < input_data_size:
                 start = i
@@ -68,13 +70,9 @@ def train_neural_network(x):
                 batch_y = np.array(train_y[start:end])
                 _, c = sess.run([optimizer, cost], feed_dict={x: batch_x, y: batch_y})
                 epoch_loss += c
-
                 i += batch_size
-
             print('Epoch', epoch+1, 'completed out of',hm_epochs,'loss:',epoch_loss)
-
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
-
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
         print('Accuracy:',accuracy.eval({x:test_x, y:test_y}))
 
