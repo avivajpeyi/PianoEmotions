@@ -26,9 +26,9 @@ Do this for all strings
 '''
 
 
-ROOT_DIR = "/Users/Vajpeyi/Desktop/Music/AI_Duet_Emotions/TrainingData/"
-DataFile = ["NegExamples/NegExamples.txt","PosExamples/PosExamples.txt"]
-
+ROOT_DIR = "/Users/Vajpeyi/Desktop/Music/AI_Duet_Emotions/PianoEmotions/TrainingData/"
+ExampleDataFile = ["NegExamples/NegExamples.txt","PosExamples/PosExamples.txt"]
+DataFile = ["NegExamples/sadSongs.txt","PosExamples/happySongs.txt"]
 
 
 pianoSize = 128 # notes 0 - 127
