@@ -5,7 +5,7 @@ import os
 # from tensorflow.examples.tutorials.mnist import input_data
 # mnist = input_data.read_data_sets("/tmp/data/", one_hot = True)
 # from createMusicalFeaturesets import create_feature_sets_and_labels
-train_x,train_y,test_x,test_y = pickle.load( open( "notesData.pickle", "rb" ) )
+train_x,train_y,test_x,test_y = pickle.load(open("notesData.pickle", "rb"))
 
 
 saveFile = "musicModel.ckpt"
@@ -59,14 +59,13 @@ def neural_network_model(data):
 
     return output
 
-saver = tf.train.Saver()
-tf_log = 'tf.log' ## SAVES EPOCH NUMBER
+
 
 
 
 def train_neural_network(x):
     prediction = neural_network_model(x)
-    cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y) )
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y) )
     optimizer = tf.train.AdamOptimizer().minimize(cost)
     hm_epochs = 10
     with tf.Session() as sess:
@@ -80,7 +79,7 @@ def train_neural_network(x):
 
         while epoch <= hm_epochs:
             if epoch != 1:
-                saver.restore(sess,'/'+saveFile)
+                #saver.restore(sess,'/'+saveFile)
                 print("Should Restore Saved File")
             epoch_loss = 1
             i=0
@@ -107,6 +106,9 @@ def train_neural_network(x):
         accPercent = accuracy.eval({x:test_x, y:test_y})*100
         print('Accuracy: '+ str(accPercent)+ '%')
 
+
+saver = tf.train.Saver()
+tf_log = 'tf.log' ## SAVES EPOCH NUMBER
 train_neural_network(x)
 
 
@@ -148,6 +150,7 @@ def test_neural_network():
         counter = len(test_x)
         print(testx,testy)
         print(test_x,test_y)
+        print('******RESULTS******')
         print('Tested',counter,'samples.')
         print('Accuracy:', accuracy.eval({x:testx, y:testy})  )
 

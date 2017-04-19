@@ -64,6 +64,8 @@ def use_neural_network(input_data):
 
         #### CONVERT THE MIDI TO NOTES AND FEATURES (without [0,1])
         #### need it in the [0 112 1 1 0 0 0 ....] format
+        
+
 
         features = np.array(list(features))
         # pos: [1,0] , argmax: 0
