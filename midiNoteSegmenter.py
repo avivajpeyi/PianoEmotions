@@ -27,6 +27,24 @@ if 2 < len(sys.argv):
 
 midi_files = glob.glob(indir + "/*.mid")
 
+transposition_intervals = {
+    'Cb': -11,
+    'Gb': -6,
+    'Db': -1,
+    'Ab': -8,
+    'Eb': -3,
+    'Bb': -10,
+    'F': -5,
+    'C': 0,
+    'G': -7,
+    'D': -2,
+    'A': -9,
+    'E': -4,
+    'B': -11,
+    'F#': -6,
+    'C#':-1
+}
+
 with open(outfile_name, 'wb') as outfile:
     writer = csv.writer(outfile, delimiter=' ')
 
@@ -38,11 +56,17 @@ with open(outfile_name, 'wb') as outfile:
         time = float(0)
         prev = float(0)
 
+        key = "C"
+
         for msg in mid:
             if time >= 10:
                 break
             ### this time is in seconds, not ticks
             time += msg.time
+
+            if msg.type == "key_signature":
+                key = msg.key
+
             if not msg.is_meta:
                 ### only interested in piano channel
                 if msg.channel == 0:
@@ -53,5 +77,5 @@ with open(outfile_name, 'wb') as outfile:
                         note = note[1] #:3]
                         # note.append(time - prev)
                         prev = time
-                        notes.append(note)
+                        notes.append(note + transposition_intervals[key]) # this preserves the intervlas, but transposes a;; samples to C
         writer.writerow(notes)
