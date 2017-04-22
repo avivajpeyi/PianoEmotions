@@ -47,14 +47,11 @@ with tf.Session() as sess:
   new_saver.restore(sess, 'savedModels/musicModel')
 
 
-# Now load the checkpoint variable values
+#### CODE NEEDED
+# saver = tf.train.Saver()
 # with tf.Session() as sess:
-#     saver = tf.train.Saver()
-#     saver.restore(sess, "musicModel.ckpt")
-
-#
-# with tf.Session() as sess:
-#     saver = tf.train.import_meta_graph('/musicModel.ckpt.meta')
-#     saver.restore(sess, "/musicModel.ckpt")
+#     sess.run(tf.initialize_all_variables())
+#     new_saver = tf.train.import_meta_graph('savedModels/musicModel.meta')
+#     new_saver.restore(sess, 'savedModels/musicModel')
 
 print("restored my model")

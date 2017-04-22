@@ -12,6 +12,7 @@ import tensorflow as tf
 import json
 from mido import MidiFile
 import numpy as np
+import tempfile
 
 
 midiFile =  "testMidi.mid"
@@ -75,6 +76,7 @@ def neural_network_model(data):
 
 #
 def predictmood(input_midi_file):
+    output = tempfile.NamedTemporaryFile()
     prediction = neural_network_model(x)
     # with open('musicModel.pickle','rb') as f:
     #     lexicon = pickle.load(f)
@@ -112,19 +114,17 @@ def predictmood(input_midi_file):
         # pos: [1,0] , argmax: 0
         # neg: [0,1] , argmax: 1
         result = (sess.run(tf.argmax(prediction.eval(feed_dict={x:[noteCount]}),1)))
-        with open('mood.txt', 'w') as outfile:
-            json.dump(data, outfile)
         if result[0] == 0:
-            print('Happy Notes:',input_midi_file)
+            output.write("Happy")
         elif result[0] == 1:
-            print('Sad Notes:',input_midi_file)
+            output.write("Sad")
+        # with open('mood.txt', 'w') as outfile:
+        #     mood_dict = dict()
+        #     if result[0] == 0:
+        #         mood_dict = {'Mood': "Happy"}
+        #     elif result[0] == 1:
+        #         mood_dict = {'Mood': "Sad"}
+        #     json.dump(mood_dict, outfile)
+    output.seek(0) #resets the pointer to the data of the file to the start
+    return output
 
-
-
-use_neural_network(midiFile)
-
-# saver = tf.train.Saver()
-# with tf.Session() as sess:
-#     sess.run(tf.initialize_all_variables())
-#     new_saver = tf.train.import_meta_graph('savedModels/musicModel.meta')
-#     new_saver.restore(sess, 'savedModels/musicModel')
