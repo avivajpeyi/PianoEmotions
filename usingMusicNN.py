@@ -9,7 +9,7 @@ python [/path/to/midi/file.mid]
 '''
 
 import tensorflow as tf
-import sys, glob
+import json
 from mido import MidiFile
 import numpy as np
 
@@ -73,13 +73,13 @@ def neural_network_model(data):
 
 
 
-
-def use_neural_network(input_midi_file):
+#
+def predictmood(input_midi_file):
     prediction = neural_network_model(x)
     # with open('musicModel.pickle','rb') as f:
     #     lexicon = pickle.load(f)
     with tf.Session() as sess:
-        sess.run(tf.initialize_all_variables())
+        sess.run(tf.global_variables_initializer())
         saver = tf.train.import_meta_graph('savedModels/musicModel.meta')
         saver.restore(sess, 'savedModels/musicModel')
         #### CONVERT THE MIDI TO NOTES AND FEATURES (without [0,1])
@@ -112,10 +112,13 @@ def use_neural_network(input_midi_file):
         # pos: [1,0] , argmax: 0
         # neg: [0,1] , argmax: 1
         result = (sess.run(tf.argmax(prediction.eval(feed_dict={x:[noteCount]}),1)))
+        with open('mood.txt', 'w') as outfile:
+            json.dump(data, outfile)
         if result[0] == 0:
             print('Happy Notes:',input_midi_file)
         elif result[0] == 1:
             print('Sad Notes:',input_midi_file)
+
 
 
 use_neural_network(midiFile)
