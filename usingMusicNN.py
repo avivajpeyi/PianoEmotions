@@ -1,10 +1,28 @@
+'''
+Thomas Matlak Avi Vajpeyi, Avery Rapson
+CS 310 Final Project
+
+Takes example midi file and prints if its happy or sad
+
+Usage:
+python [/path/to/midi/file.mid]
+'''
+
 import tensorflow as tf
-import pickle
+import sys, glob
+from mido import MidiFile
 import numpy as np
 
 
-n_nodes_hl1 = 500
-n_nodes_hl2 = 500
+midiFile =  "testMidi.mid"
+saveFile = "savedModels/musicModel"
+
+pianoSize = 128
+
+
+n_nodes_hl1 = 1500
+n_nodes_hl2 = 1500
+n_nodes_hl3 = 1500
 
 n_classes = 2
 hm_data = 2000000
@@ -19,7 +37,7 @@ y = tf.placeholder('float')
 current_epoch = tf.Variable(1)
 
 hidden_1_layer = {'f_fum':n_nodes_hl1,
-                  'weight':tf.Variable(tf.random_normal([278, n_nodes_hl1])),
+                  'weight':tf.Variable(tf.random_normal([pianoSize, n_nodes_hl1])),
                   'bias':tf.Variable(tf.random_normal([n_nodes_hl1]))}
 
 hidden_2_layer = {'f_fum':n_nodes_hl2,
@@ -48,34 +66,62 @@ def neural_network_model(data):
     l3 = tf.nn.relu(l3)
     ####OUTPUT LAYER
     output = tf.matmul(l3,output_layer['weight']) + output_layer['bias']
-
     return output
 
-saver = tf.train.Saver()
 
-def use_neural_network(input_data):
+
+
+
+
+
+def use_neural_network(input_midi_file):
     prediction = neural_network_model(x)
     # with open('musicModel.pickle','rb') as f:
     #     lexicon = pickle.load(f)
-
     with tf.Session() as sess:
         sess.run(tf.initialize_all_variables())
-        saver.restore(sess,"model.ckpt")
-
+        saver = tf.train.import_meta_graph('savedModels/musicModel.meta')
+        saver.restore(sess, 'savedModels/musicModel')
         #### CONVERT THE MIDI TO NOTES AND FEATURES (without [0,1])
         #### need it in the [0 112 1 1 0 0 0 ....] format
-
-
-
-        features = np.array(list(features))
+        mid = MidiFile(input_midi_file)
+        notes = []
+        time = float(0)
+        prev = float(0)
+        for msg in mid:
+            if time >= 10:
+                break
+            ### this time is in seconds, not ticks
+            time += msg.time
+            if not msg.is_meta:
+                ### only interested in piano channel
+                if msg.channel == 0:
+                    if msg.type == 'note_on':
+                        # note in vector form to train on
+                        note = msg.bytes()
+                        # only interested in the note #and velocity. note message is in the form of [type, note, velocity]
+                        note = note[1] #:3]
+                        # note.append(time - prev)
+                        prev = time
+                        notes.append(note)
+        noteCount = np.zeros(pianoSize)
+        for note in notes:
+            noteCount[note] += 1
+        noteCount = list(noteCount)
+        #features = np.array(list(features))
         # pos: [1,0] , argmax: 0
         # neg: [0,1] , argmax: 1
-        result = (sess.run(tf.argmax(prediction.eval(feed_dict={x:[features]}),1)))
+        result = (sess.run(tf.argmax(prediction.eval(feed_dict={x:[noteCount]}),1)))
         if result[0] == 0:
-            print('Happy Notes:',input_data)
+            print('Happy Notes:',input_midi_file)
         elif result[0] == 1:
-            print('Sad Notes:',input_data)
+            print('Sad Notes:',input_midi_file)
 
 
-# opne midi file
-#use_neural_network(pass midi file)
+use_neural_network(midiFile)
+
+# saver = tf.train.Saver()
+# with tf.Session() as sess:
+#     sess.run(tf.initialize_all_variables())
+#     new_saver = tf.train.import_meta_graph('savedModels/musicModel.meta')
+#     new_saver.restore(sess, 'savedModels/musicModel')
