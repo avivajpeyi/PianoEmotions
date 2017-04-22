@@ -25,11 +25,8 @@ Do this for all strings
 
 '''
 
-
-ROOT_DIR = "/Users/Vajpeyi/Desktop/Music/AI_Duet_Emotions/PianoEmotions/TrainingData/"
-ExampleDataFile = ["NegExamples/NegExamples.txt","PosExamples/PosExamples.txt"]
+ROOT_DIR = "TrainingData/"
 DataFile = ["NegExamples/sadSongs.txt","PosExamples/happySongs.txt"]
-
 
 pianoSize = 128 # notes 0 - 127
 # this also defines our lexicon
@@ -62,8 +59,8 @@ def sample_handling(sample, classification):
 
 def create_feature_sets_and_labels(DataFile,test_size = 0.1):
     features = []
-    features += sample_handling(ROOT_DIR+DataFile[0],[1,0]) # neg
-    features += sample_handling(ROOT_DIR+DataFile[1], [0,1])# pos
+    features += sample_handling(ROOT_DIR+DataFile[0],[0,1])# neg
+    features += sample_handling(ROOT_DIR+DataFile[1],[1,0]) # pos
     random.shuffle(features)
     '''
         does tf.argmax([output]) == tf.argmax([expectations]) will look like:
