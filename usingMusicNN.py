@@ -55,8 +55,8 @@ saver = tf.train.Saver()
 
 def use_neural_network(input_data):
     prediction = neural_network_model(x)
-    with open('musicModel.pickle','rb') as f:
-        lexicon = pickle.load(f)
+    # with open('musicModel.pickle','rb') as f:
+    #     lexicon = pickle.load(f)
 
     with tf.Session() as sess:
         sess.run(tf.initialize_all_variables())
@@ -64,7 +64,7 @@ def use_neural_network(input_data):
 
         #### CONVERT THE MIDI TO NOTES AND FEATURES (without [0,1])
         #### need it in the [0 112 1 1 0 0 0 ....] format
-        
+
 
 
         features = np.array(list(features))

@@ -1,2 +1,2 @@
-model_checkpoint_path: "musicModel.ckpt"
-all_model_checkpoint_paths: "musicModel.ckpt"
+model_checkpoint_path: "my-model"
+all_model_checkpoint_paths: "my-model"

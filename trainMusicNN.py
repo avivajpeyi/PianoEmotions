@@ -8,7 +8,7 @@ import os
 train_x,train_y,test_x,test_y = pickle.load(open("notesData.pickle", "rb"))
 
 
-saveFile = "musicModel.ckpt"
+saveFile = "savedModels/musicModel"
 
 
 n_nodes_hl1 = 1500
@@ -60,9 +60,6 @@ def neural_network_model(data):
     return output
 
 
-
-
-
 def train_neural_network(x):
     prediction = neural_network_model(x)
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y) )
@@ -70,17 +67,17 @@ def train_neural_network(x):
     hm_epochs = 10
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        try:
-            epoch = int(open(tf_log,'r').read().split('\n')[-2])+1
-            print('STARTING EPOCH:',epoch)
-        except:
-            epoch = 1
+        # try:
+        #     epoch = int(open(tf_log,'r').read().split('\n')[-2])+1
+        #     print('STARTING EPOCH:',epoch)
+        # except:
+        #     epoch = 1
         batches_run = 0
-
+        epoch = 1
         while epoch <= hm_epochs:
-            if epoch != 1:
-                #saver.restore(sess,'/'+saveFile)
-                print("Should Restore Saved File")
+            # if epoch != 1:
+            #     #saver.restore(sess,'/'+saveFile)
+            #     print("Should Restore Saved File")
             epoch_loss = 1
             i=0
             while i < len(train_x):
@@ -92,12 +89,14 @@ def train_neural_network(x):
                 epoch_loss += c
                 i+=batch_size
                 batches_run +=1
-                print('Batch run:',batches_run,'/',batch_size,'| Epoch:',epoch,'| Batch Loss:',c,)
-            #saver.save(sess, saveFile)
+                #print('Batch run:',batches_run,'/',batch_size,'| Epoch:',
+                # epoch,'| Batch Loss:',c,)
+            saver.save(sess, saveFile)
             print("Should Save session in "+ saveFile )
-            print('Epoch', epoch+1, 'completed out of',hm_epochs,'loss:',epoch_loss)
-            with open(tf_log,'a') as f:
-                f.write(str(epoch)+'\n')
+            #print('Epoch', epoch+1, 'completed out of',hm_epochs,'loss:',
+            # epoch_loss)
+            # with open(tf_log,'a') as f:
+            #     f.write(str(epoch)+'\n')
             epoch +=1
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
@@ -108,7 +107,7 @@ def train_neural_network(x):
 
 
 saver = tf.train.Saver()
-tf_log = 'tf.log' ## SAVES EPOCH NUMBER
+# tf_log = 'tf.log' ## SAVES EPOCH NUMBER
 train_neural_network(x)
 
 
@@ -143,8 +142,6 @@ def test_neural_network():
         #         except:
         #             pass
 
-
-
         testx = np.array(test_x)
         testy = np.array(test_y)
         counter = len(test_x)
@@ -152,12 +149,12 @@ def test_neural_network():
         print(test_x,test_y)
         print('******RESULTS******')
         print('Tested',counter,'samples.')
-        print('Accuracy:', accuracy.eval({x:testx, y:testy})  )
+        print('Accuracy:', accuracy.eval({x:testx, y:testy}) )
 
 
 #test_neural_network()
 
 
 print ("\n\n\nFINISHED\n\n\n")
-x =os.remove("tf.log")
-print("removed :" + str(x))
+# x =os.remove("tf.log")
+# print("removed :" + str(x))
